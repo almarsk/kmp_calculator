@@ -90,6 +90,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.runtime.android)
+    implementation(libs.androidx.navigation.compose)
     debugImplementation(compose.uiTooling)
 }
 
