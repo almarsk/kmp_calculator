@@ -68,8 +68,9 @@ android {
 
     defaultConfig {
         applicationId = "org.almarsk"
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
+        minSdk = 23 //libs.versions.android.minSdk.get().toInt()
+        //noinspection ExpiredTargetSdkVersion
+        targetSdk = 23 //libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
     }

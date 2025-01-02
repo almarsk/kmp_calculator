@@ -1,1 +1,1 @@
-#WIP kotlin multiplatform calculator app
+kotlin multiplatform calculator app

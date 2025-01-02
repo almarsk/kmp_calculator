@@ -1,6 +1,6 @@
 package org.almarsk
 
-class ArithmeticManager {
+class ExpressionParser {
 
     fun evaluate(expression: String): Double {
         val tokens = expression.replace(" ", "").toList()
@@ -19,7 +19,11 @@ class ArithmeticManager {
                     continue
                 }
 
-                tokens[i] == '(' -> operators.add(tokens[i])
+                tokens[i] == '(' -> {
+                    if (i > 0 && tokens[i - 1].isDigit()) operators.add('*')
+                    operators.add(tokens[i])
+                }
+
                 tokens[i] == ')' -> {
                     while (operators.isNotEmpty() && operators.last() != '(') {
                         values.add(
@@ -34,7 +38,21 @@ class ArithmeticManager {
                 }
 
                 tokens[i] in listOf('+', '-', '*', '/') -> {
-                    while (operators.isNotEmpty() && hasPrecedence(tokens[i], operators.last())) {
+                    if (tokens[i] == '-' && (i == 0 || tokens[i - 1] in listOf(
+                            '+',
+                            '-',
+                            '*',
+                            '/',
+                            '('
+                        ))
+                    ) {
+                        values.add(0.0)
+                    }
+                    while (
+                        operators.isNotEmpty() &&
+                        hasPrecedence(tokens[i], operators.last()) &&
+                        values.size >= 2
+                    ) {
                         values.add(
                             applyOperator(
                                 operators.removeLast(),

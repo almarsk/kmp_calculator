@@ -16,11 +16,8 @@ class CalculatorViewModel : ViewModel() {
 
     fun addArg(c: Char) {
 
-        if (_args.value.last().digitToIntOrNull() != null && c.digitToIntOrNull() == null)
-            return
-
-        if (_justCalculated.value && c.digitToIntOrNull() != null) {
-            clear()
+        if (_justCalculated.value) {
+            c.digitToIntOrNull()?.also { clear() }
             _justCalculated.update { false }
         }
 
@@ -44,7 +41,7 @@ class CalculatorViewModel : ViewModel() {
     fun calculate() {
         viewModelScope.launch {
             try {
-                val res = ArithmeticManager().evaluate(_args.value).toString()
+                val res = ExpressionParser().evaluate(_args.value).toString()
 
                 val parts = res.split(".")
                 var dec = ""

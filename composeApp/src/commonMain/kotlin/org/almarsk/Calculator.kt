@@ -6,12 +6,14 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
@@ -28,13 +30,11 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun Calculator() {
     val viewModel = koinViewModel<CalculatorViewModel>()
-    //val viewModel: CalculatorViewModel = viewModel()
     val args by viewModel.args.collectAsState()
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
@@ -46,11 +46,15 @@ fun Calculator() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
 
         Column(
-            modifier = Modifier.align(Alignment.BottomStart)
+            modifier = Modifier
+                .fillMaxHeight()
+                .align(Alignment.BottomStart)
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth().horizontalScroll(scrollState),
+                    .fillMaxWidth()
+                    .horizontalScroll(scrollState)
+                    .heightIn(200.dp),
                 contentAlignment = Alignment.BottomEnd
             ) {
                 Text(
@@ -61,34 +65,42 @@ fun Calculator() {
                 )
             }
 
-            LazyVerticalGrid(
-                verticalArrangement = Arrangement.Bottom,
-                columns = GridCells.Fixed(4)
-            ) {
-                items(calculatorArgs.size) { index ->
-                    val op = calculatorArgs[index]
-                    Box(
+            Column(modifier = Modifier.fillMaxSize()) {
+                for (row in calculatorArgs) {
+                    Row(
                         modifier = Modifier
-                            .padding(10.dp)
-                            .aspectRatio(1f)
-                            .clip(CircleShape)
-                            .background(Color.Gray)
-                            .clickable {
-                                when (op) {
-                                    is CalculatorOperation.Add -> viewModel.addArg(op.arg)
-                                    CalculatorOperation.Calculate -> viewModel.calculate()
-                                    CalculatorOperation.Erase -> viewModel.erase()
-                                    CalculatorOperation.Clear -> viewModel.clear()
-                                }
-                            },
-                        contentAlignment = Alignment.Center
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .padding(10.dp),
+
+                        horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        Text(
-                            textAlign = TextAlign.Center,
-                            text = op.displayName,
-                            fontSize = 50.sp,
-                            fontFamily = FontFamily.Monospace
-                        )
+                        for (button in row) {
+                            Box(
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .aspectRatio(1f)
+                                    .clip(CircleShape)
+                                    .background(Color.Gray)
+                                    //.weight(1f)
+                                    .clickable {
+                                        when (button) {
+                                            is CalculatorOperation.Add -> viewModel.addArg(button.arg)
+                                            CalculatorOperation.Calculate -> viewModel.calculate()
+                                            CalculatorOperation.Erase -> viewModel.erase()
+                                            CalculatorOperation.Clear -> viewModel.clear()
+                                        }
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    textAlign = TextAlign.Center,
+                                    text = button.displayName,
+                                    fontSize = 50.sp,
+                                    fontFamily = FontFamily.Monospace
+                                )
+                            }
+                        }
                     }
                 }
             }
